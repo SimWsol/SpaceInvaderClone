@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include "Vector2d.h"
+#include "Player.h"
 
 int main()
 {
@@ -12,13 +13,19 @@ int main()
 	InitWindow(screenWidth, screenHeight, "Space Invaders");
 	SetTargetFPS(60);
 
-	Vector2d vec;
+	Player player("resources/graphics/spaceship_orange.png", halfScreenWidth, screenHeight - 100);
+	player.SetScreenBounds(screenWidth, screenHeight);
+	
 
 	while (!WindowShouldClose())
 	{
-		BeginDrawing();
+		
+		player.Update();
 
+		BeginDrawing();
 		ClearBackground(BLACK);
+
+		player.Draw();
 
 		EndDrawing();
 	}
