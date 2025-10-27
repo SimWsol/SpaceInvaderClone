@@ -36,6 +36,7 @@ int main()
 
 	while (!WindowShouldClose())
 	{
+		DrawFPS(50, 50);
 		
 		if (currentState == MENU)
 		{

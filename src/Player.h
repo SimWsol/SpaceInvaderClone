@@ -1,6 +1,8 @@
 #pragma once
 #include "Vector2d.h"
 #include "raylib.h"
+#include "Bullet.h"
+#include <vector>
 
 class Player
 {
@@ -19,5 +21,14 @@ private:
 	float speed;
 	float screenWidth;
 	float screenHeight;
-};
 
+	// Bullet management
+	std::vector<Bullet> bullets;
+	float shootCooldown;
+	float timeSinceLastShot;
+
+	void HandleMovement();
+	void HandleShooting();
+	void UpdateBullets();
+	void DrawBullets();
+};
