@@ -109,3 +109,11 @@ float Vector2d::AngleBetweenVectors(Vector2d inOtherVector)
 
 	return degrees;
 }
+
+bool Vector2d::CheckRectangleCollision(float width, float height, Vector2d other, float otherWidth, float otherHeight)
+{
+	return (x < other.x + otherWidth &&
+		x + width > other.x &&
+		y < other.y + otherHeight &&
+		y + height > other.y);
+}

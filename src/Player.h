@@ -16,6 +16,8 @@ public:
 	void Update();
 	void SetScreenBounds(float width, float height);
 
+	std::vector<Bullet>& GetBullets() { return bullets; }
+
 private:
 	Texture2D playerTexture;
 	float speed;

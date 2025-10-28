@@ -29,4 +29,6 @@ public:
 	float DotProduct(Vector2d inOtherVector);
 
 	float AngleBetweenVectors(Vector2d inOtherVector);
+
+	bool CheckRectangleCollision(float width, float height, Vector2d other, float otherWidth, float otherHeight);
 };

@@ -1,4 +1,5 @@
 #include "EnemyManager.h"
+#include <iostream>
 
 EnemyManager::EnemyManager(float screenWidth, float screenHeight)
 {
@@ -73,19 +74,30 @@ void EnemyManager::SpawnWave()
 
 	WaveConfig config = GetWaveConfig(currentWave);
 
-	float spacingX = 80.f;
-	float spacingY = 60.f;
+	float enemyScale = 4.0f;
 
 	// Temp texure to get the size for centering
 	Texture2D tempTexture = LoadTexture(config.enemyTexture);
-	float enemyWidth = tempTexture.width;
+	float baseWidth = tempTexture.width;
+	float baseHeight = tempTexture.height;
 	UnloadTexture(tempTexture);
 
-	float totalWidth = (config.enemiesPerRow - 1) * spacingX + enemyWidth;
+	// Calculate scaled dimensions
+	float scaledWidth = baseWidth * enemyScale;
+	float scaledHeight = baseHeight * enemyScale;
+
+	// Spacing should be based on scaled size + gap
+	float gapX = 20;  // Gap between enemies
+	float gapY = 20;
+	float spacingX = scaledWidth + gapX;
+	float spacingY = scaledHeight + gapY;
+
+	// Calculate total width for centering
+	float totalWidth = (config.enemiesPerRow * scaledWidth) + ((config.enemiesPerRow - 1) * gapX);
 	float startX = (screenWidth - totalWidth) / 2;
 	float startY = 50;
 
-	// Spawning the enemies in a "grid"
+	// Spawn enemies in grid formation
 	for (int row = 0; row < config.rows; row++)
 	{
 		for (int col = 0; col < config.enemiesPerRow; col++)
@@ -95,7 +107,7 @@ void EnemyManager::SpawnWave()
 				startY + row * spacingY
 			};
 
-			enemies.push_back(new Enemy(enemyPos, config.enemyTexture));
+			enemies.push_back(new Enemy(enemyPos, config.enemyTexture, enemyScale));
 		}
 	}
 }
@@ -122,4 +134,63 @@ void EnemyManager::Draw()
 
 	DrawText(TextFormat("Wave: %d", currentWave), screenWidth - 150, 10, 20, WHITE);
 	DrawText(TextFormat("Enemies: %d", GetEnemiesRemaining()), screenWidth - 150, 35, 20, WHITE);
+}
+
+void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
+{
+	for (auto& bullet : bullets)
+	{
+		for (auto enemy : enemies)
+		{
+			if (enemy->isAlive)
+			{
+				Vector2d bulletPos = bullet.position;
+				float bulletWidth = 4;
+				float bulletHeight = 10;
+
+				// Use collision-specific position and size
+				if (bulletPos.CheckRectangleCollision(
+					bulletWidth,
+					bulletHeight,
+					enemy->GetCollisionPosition(),
+					enemy->GetCollisionWidth(),
+					enemy->GetCollisionHeight()))
+				{
+					enemy->TakeDamage();
+					bullet.position.y = -100;
+					break;
+				}
+			}
+		}
+	}
+}
+
+bool EnemyManager::AllEnemiesDefeated()
+{
+	for (auto enemy : enemies)
+	{
+		if (enemy->isAlive)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int EnemyManager::GetCurrentWave()
+{
+	return currentWave;
+}
+
+int EnemyManager::GetEnemiesRemaining()
+{
+	int count = 0;
+	for (auto enemy : enemies)
+	{
+		if (enemy->isAlive)
+		{
+			count++;
+		}
+	}
+	return count;
 }

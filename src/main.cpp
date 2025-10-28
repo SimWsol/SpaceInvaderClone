@@ -2,6 +2,7 @@
 #include "Vector2d.h"
 #include "Player.h"
 #include "Menu.h"
+#include "EnemyManager.h"
 
 enum GameState
 {
@@ -32,6 +33,7 @@ int main()
 
 	Menu menu(spaceshipPaths, 5, screenWidth, screenHeight);
 	Player* player = nullptr;
+	EnemyManager* enemyManager = nullptr;
 
 
 	while (!WindowShouldClose())
@@ -46,12 +48,18 @@ int main()
 					halfScreenWidth,
 					screenHeight - 100);
 				player->SetScreenBounds(screenWidth, screenHeight);
+				
+				enemyManager = new EnemyManager(screenWidth, screenHeight);
+
 				currentState = PLAYING;
 			}
 		}
 		else if (currentState == PLAYING)
 		{
 			player->Update();
+			enemyManager->Update();
+
+			enemyManager->CheckBulletCollisions(player->GetBullets());
 		}
 
 		BeginDrawing();
@@ -64,6 +72,7 @@ int main()
 		else if (currentState == PLAYING)
 		{
 			player->Draw();
+			enemyManager->Draw();
 		}
 
 		EndDrawing();
@@ -72,6 +81,10 @@ int main()
 	if (player != nullptr) 
 	{
 		delete player;
+	}
+	if (enemyManager != nullptr)
+	{
+		delete enemyManager;
 	}
 
 	CloseWindow();

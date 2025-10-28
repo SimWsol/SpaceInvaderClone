@@ -1,9 +1,10 @@
 #include "Enemy.h"
 
-Enemy::Enemy(Vector2d startPosition, const char* texturePath)
+Enemy::Enemy(Vector2d startPosition, const char* texturePath, float scale)
 {
 	position = startPosition;
 	isAlive = true;
+	this->scale = scale;
 	texture = LoadTexture(texturePath);
 }
 
@@ -21,7 +22,11 @@ void Enemy::Draw()
 {
 	if (isAlive)
 	{
-		DrawTexture(texture, (int)position.x, (int)position.y, WHITE);
+		DrawTextureEx(texture,
+			{ position.x, position.y },
+			0.0f,
+			scale,
+			WHITE);
 	}
 }
 
