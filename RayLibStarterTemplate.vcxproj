@@ -144,6 +144,7 @@
     <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\EnemyManager.cpp" />
+    <ClCompile Include="src\HomingMissile.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="src\Bullet.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\EnemyManager.h" />
+    <ClInclude Include="src\HomingMissile.h" />
     <ClInclude Include="src\Menu.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Vector2d.h" />

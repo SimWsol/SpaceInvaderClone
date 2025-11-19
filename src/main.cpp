@@ -56,10 +56,19 @@ int main()
 		}
 		else if (currentState == PLAYING)
 		{
+			Enemy* nearestEnemy = enemyManager->GetNearestEnemyToPosition(player->position);
+
 			player->Update();
+			player->HandleMissiles(nearestEnemy);
+
+			enemyManager->UpdateMissileTargets(player->GetHomingissiles());
+
 			enemyManager->Update();
 
 			enemyManager->CheckBulletCollisions(player->GetBullets());
+			enemyManager->CheckMissileCollisions(player->GetHomingissiles());
+
+			player->UpdateMissiles();
 		}
 
 		BeginDrawing();

@@ -2,6 +2,8 @@
 #include "Vector2d.h"
 #include "raylib.h"
 #include "Bullet.h"
+#include "HomingMissile.h"
+#include "Enemy.h"
 #include <vector>
 
 class Player
@@ -15,8 +17,11 @@ public:
 	void Draw();
 	void Update();
 	void SetScreenBounds(float width, float height);
+	void UpdateMissiles();
+	void HandleMissiles(Enemy* nearestEnemy);
 
 	std::vector<Bullet>& GetBullets() { return bullets; }
+	std::vector<HomingMissile>& GetHomingissiles() { return homingMissiles; }
 
 private:
 	Texture2D playerTexture;
@@ -29,8 +34,15 @@ private:
 	float shootCooldown;
 	float timeSinceLastShot;
 
+	// Homing missile management
+	std::vector<HomingMissile> homingMissiles;
+	float missileCooldown;
+	float timeSinceLastMissile;
+	int missileCount;
+
 	void HandleMovement();
 	void HandleShooting();
 	void UpdateBullets();
 	void DrawBullets();
+	void DrawMissiles();
 };

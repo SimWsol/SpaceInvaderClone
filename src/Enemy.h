@@ -18,7 +18,7 @@ public:
 	float GetHeight() { return (float)texture.height * scale; }
 
 	// Collision box is smaller, scale to fit actual sprite
-	float GetCollisionWidth() { return GetWidth() * 0.4f; }   // 60% of texture size
+	float GetCollisionWidth() { return GetWidth() * 0.4f; }
 	float GetCollisionHeight() { return GetHeight() * 0.4f; }
 
 	// Center the collision box on the sprite

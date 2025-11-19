@@ -27,21 +27,21 @@ WaveConfig EnemyManager::GetWaveConfig(int waveNum)
 	switch (waveNum)
 	{
 	case 1:
-		config.enemiesPerRow = 6;
+		config.enemiesPerRow = 3;
 		config.rows = 2;
 		config.enemySpeed = 50.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
 	case 2:
-		config.enemiesPerRow = 7;
+		config.enemiesPerRow = 6;
 		config.rows = 2;
 		config.enemySpeed = 60.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
 	case 3:
-		config.enemiesPerRow = 8;
+		config.enemiesPerRow = 6;
 		config.rows = 3;
 		config.enemySpeed = 70.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
@@ -127,6 +127,7 @@ void EnemyManager::Update()
 
 void EnemyManager::Draw()
 {
+	
 	for (auto enemy : enemies)
 	{
 		enemy->Draw();
@@ -148,7 +149,7 @@ void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
 				float bulletWidth = 4;
 				float bulletHeight = 10;
 
-				// Use collision-specific position and size
+				// Use collision specific position and size
 				if (bulletPos.CheckRectangleCollision(
 					bulletWidth,
 					bulletHeight,
@@ -158,6 +159,89 @@ void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
 				{
 					enemy->TakeDamage();
 					bullet.position.y = -100;
+					break;
+				}
+			}
+		}
+	}
+}
+
+void EnemyManager::UpdateMissileTargets(std::vector<HomingMissile>& missiles)
+{
+	// Update each missile with closest enemy target
+	std::cout << "Updating " << missiles.size() << " missiles" << std::endl;
+	for (auto& missile : missiles)
+	{
+		if (missile.isActive)
+		{
+			Enemy* target = FindClosestEnemy(missile.position);
+
+			if (target != nullptr)
+			{
+				std::cout << "Missile has target at (" << target->position.x
+					<< ", " << target->position.y << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << "Missile has NO TARGET!" << std::endl;
+			}
+
+			missile.Update(target);
+		}
+	}
+}
+
+Enemy* EnemyManager::GetNearestEnemyToPosition(Vector2d position)
+{
+	return FindClosestEnemy(position);
+}
+
+Enemy* EnemyManager::FindClosestEnemy(Vector2d position)
+{
+	Enemy* closest = nullptr;
+	float closestDistance = 999999.0f;
+
+	for (auto enemy : enemies)
+	{
+		if (enemy->isAlive)
+		{
+			float distance = position.DistanceToTarget(enemy->position);
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				closest = enemy;
+			}
+		}
+	}
+
+	return closest;
+}
+
+void EnemyManager::CheckMissileCollisions(std::vector<HomingMissile>& missiles)
+{
+	for (auto& missile : missiles)
+	{
+		if (!missile.isActive) continue;
+
+		for (auto enemy : enemies)
+		{
+			if (enemy->isAlive)
+			{
+				Vector2d collisionPos = enemy->GetCollisionPosition();
+
+				// Calculate enemy center
+				Vector2d enemyCenter = {
+					collisionPos.x + enemy->GetCollisionWidth() / 2,
+					collisionPos.y + enemy->GetCollisionHeight() / 2
+				};
+
+				float distance = missile.position.DistanceToTarget(enemyCenter);
+
+				if (distance < 30.0f)
+				{
+					enemy->TakeDamage();
+					missile.isActive = false;
+					missile.position.y = -100;
 					break;
 				}
 			}
