@@ -27,7 +27,7 @@ WaveConfig EnemyManager::GetWaveConfig(int waveNum)
 	switch (waveNum)
 	{
 	case 1:
-		config.enemiesPerRow = 3;
+		config.enemiesPerRow = 5;
 		config.rows = 2;
 		config.enemySpeed = 50.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
@@ -47,15 +47,29 @@ WaveConfig EnemyManager::GetWaveConfig(int waveNum)
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
+	case 4:
+		config.enemiesPerRow = 7;
+		config.rows = 3;
+		config.enemySpeed = 80.0f;
+		config.enemyTexture = "resources/graphics/enemy_red.png";
+		break;
+
+	case 5:
+		config.enemiesPerRow = 7;
+		config.rows = 4;
+		config.enemySpeed = 90.0f;
+		config.enemyTexture = "resources/graphics/enemy_red.png";
+		break;
+
 	default:
-		config.enemiesPerRow = 6 + waveNum;
-		config.rows = 2 + (waveNum - 1) / 2;
+		config.enemiesPerRow = 5 + (waveNum / 3);
+		config.rows = 2 + (waveNum / 2);
 		config.enemySpeed = 50.0f + waveNum * 10.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 
 		// Maximums
-		if (config.enemiesPerRow > 12) config.enemiesPerRow = 12;
-		if (config.rows > 5) config.rows = 5;
+		if (config.enemiesPerRow > 8) config.enemiesPerRow = 8;
+		if (config.rows > 6) config.rows = 6;
 		break;
 	}
 
@@ -86,18 +100,32 @@ void EnemyManager::SpawnWave()
 	float scaledWidth = baseWidth * enemyScale;
 	float scaledHeight = baseHeight * enemyScale;
 
-	// Spacing should be based on scaled size + gap
-	float gapX = 20;  // Gap between enemies
-	float gapY = 20;
+	float screenMargin = 50.0f;
+	float availableWidth = screenWidth - (2 * screenMargin);
+
+	float idealGapX = 20.0f;
+	float idealSpacingX = scaledWidth + idealGapX;
+	int maxEnemiesThatFit = (int)((availableWidth + idealGapX) / idealSpacingX);
+
+	if (config.enemiesPerRow > maxEnemiesThatFit)
+	{
+		config.enemiesPerRow = maxEnemiesThatFit;
+	}
+
+	float totalEnemyWidth = config.enemiesPerRow * scaledWidth;
+	float totalGapWidth = availableWidth - totalEnemyWidth;
+	float gapX = totalGapWidth / (config.enemiesPerRow + 1);
+
+	if (gapX < 10.0f) gapX = 10.0f;
+
 	float spacingX = scaledWidth + gapX;
+	float gapY = 20.0f;
 	float spacingY = scaledHeight + gapY;
 
-	// Calculate total width for centering
 	float totalWidth = (config.enemiesPerRow * scaledWidth) + ((config.enemiesPerRow - 1) * gapX);
 	float startX = (screenWidth - totalWidth) / 2;
-	float startY = 50;
+	float startY = 50.0f;
 
-	// Spawn enemies in grid formation
 	for (int row = 0; row < config.rows; row++)
 	{
 		for (int col = 0; col < config.enemiesPerRow; col++)
@@ -110,6 +138,7 @@ void EnemyManager::SpawnWave()
 			enemies.push_back(new Enemy(enemyPos, config.enemyTexture, enemyScale));
 		}
 	}
+
 }
 
 void EnemyManager::Update()
