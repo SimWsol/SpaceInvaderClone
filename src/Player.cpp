@@ -96,7 +96,7 @@ void Player::HandleMissiles(Enemy* nearestEnemy)
 		};
 
 		// SLOWER SPEED = better tracking
-		HomingMissile newMissile(missileStartPos, 200.0f);  // Reduced from 300
+		HomingMissile newMissile(missileStartPos, 200.0f);
 
 		if (nearestEnemy != nullptr && nearestEnemy->isAlive)
 		{

@@ -13,7 +13,7 @@ HomingMissile::HomingMissile(Vector2d startPosition, float speed)
 
 void HomingMissile::Update(Enemy* targetEnemy)
 {
-    float deltaTime = GetFrameTime();
+    float dT = GetFrameTime();
 
     if (targetEnemy != nullptr && targetEnemy->isAlive)
     {
@@ -41,9 +41,9 @@ void HomingMissile::Update(Enemy* targetEnemy)
             float angleToTarget = acosf(dot);
             float turnRate = angleToTarget * 3.0f;
 
-            if (turnRate > maxTurnRate * deltaTime)
+            if (turnRate > maxTurnRate * dT)
             {
-                turnRate = maxTurnRate * deltaTime;
+                turnRate = maxTurnRate * dT;
             }
 
             float cross = currentDirection.CrossProduct(desiredDirection);
@@ -59,7 +59,7 @@ void HomingMissile::Update(Enemy* targetEnemy)
         }
     }
 
-    Vector2d movement = velocity.ScaleVector(deltaTime);
+    Vector2d movement = velocity.ScaleVector(dT);
     position = position.SetVectorOffset(movement);
 
     UpdateTrail();
