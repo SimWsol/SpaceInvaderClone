@@ -29,42 +29,36 @@ WaveConfig EnemyManager::GetWaveConfig(int waveNum)
 	case 1:
 		config.enemiesPerRow = 5;
 		config.rows = 2;
-		config.enemySpeed = 50.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
 	case 2:
 		config.enemiesPerRow = 6;
 		config.rows = 2;
-		config.enemySpeed = 60.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
 	case 3:
 		config.enemiesPerRow = 6;
 		config.rows = 3;
-		config.enemySpeed = 70.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
 	case 4:
 		config.enemiesPerRow = 7;
 		config.rows = 3;
-		config.enemySpeed = 80.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
 	case 5:
 		config.enemiesPerRow = 7;
 		config.rows = 4;
-		config.enemySpeed = 90.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 		break;
 
 	default:
 		config.enemiesPerRow = 5 + (waveNum / 3);
 		config.rows = 2 + (waveNum / 2);
-		config.enemySpeed = 50.0f + waveNum * 10.0f;
 		config.enemyTexture = "resources/graphics/enemy_red.png";
 
 		// Maximums
