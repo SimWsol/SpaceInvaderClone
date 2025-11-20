@@ -5,6 +5,7 @@ Player::Player(const char* imagePath, float startX, float startY)
 {
 	position.x = startX;
 	position.y = startY;
+	lastPosition = position;
 	playerTexture = LoadTexture(imagePath);
 	speed = 300.f;
 	screenWidth = 0;
@@ -18,6 +19,9 @@ Player::Player(const char* imagePath, float startX, float startY)
 	missileCooldown = 1.0f;
 	timeSinceLastMissile = 0;
 	missileCount = 10;
+
+	health = 3;
+	maxHealth = 3;
 }
 
 Player::~Player()
@@ -33,12 +37,31 @@ void Player::SetScreenBounds(float width, float height)
 
 void Player::Update()
 {
+	float dT = GetFrameTime();
+
+	lastPosition = position;
+
 	timeSinceLastShot += GetFrameTime();
 	timeSinceLastMissile += GetFrameTime();
 
 	HandleMovement();
 	HandleShooting();
 	UpdateBullets();
+}
+
+void Player::TakeDamage()
+{
+	health--;
+	if (health < 0) health = 0;
+}
+
+Vector2d Player::GetVelocity()
+{
+	float dT = GetFrameTime();
+	if (dT < 0.001f) return { 0, 0 };
+
+	Vector2d displacement = lastPosition.VectorTowardsTarget(position);
+	return displacement.ScaleVector(-1.0f / dT);
 }
 
 void Player::HandleMovement()
@@ -157,6 +180,7 @@ void Player::Draw()
 	DrawBullets();
 	DrawMissiles();
 
+	DrawText(TextFormat("Health: %d", health), 10, 10, 20, health > 1 ? GREEN : RED);
 	DrawText(TextFormat("Missiles: %d", missileCount), 10, 60, 20, YELLOW);
 }
 

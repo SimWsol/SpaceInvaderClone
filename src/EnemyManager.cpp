@@ -146,6 +146,22 @@ void EnemyManager::Update()
 	{
 		enemy->Update();
 	}
+
+	UpdateEnemyBullets();
+}
+
+void EnemyManager::UpdateEnemyBullets()
+{
+	for (auto& bullet : enemyBullets)
+	{
+		bullet.Update();
+	}
+
+	enemyBullets.erase(
+		std::remove_if(enemyBullets.begin(), enemyBullets.end(),
+			[this](EnemyBullet& b) { return b.IsOffScreen(screenHeight); }),
+		enemyBullets.end()
+	);
 }
 
 void EnemyManager::Draw()
@@ -156,8 +172,18 @@ void EnemyManager::Draw()
 		enemy->Draw();
 	}
 
+	DrawEnemyBullets();
+
 	DrawText(TextFormat("Wave: %d", currentWave), screenWidth - 150, 10, 20, WHITE);
 	DrawText(TextFormat("Enemies: %d", GetEnemiesRemaining()), screenWidth - 150, 35, 20, WHITE);
+}
+
+void EnemyManager::DrawEnemyBullets()
+{
+	for (auto& bullet : enemyBullets)
+	{
+		bullet.Draw();
+	}
 }
 
 void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
@@ -212,6 +238,108 @@ void EnemyManager::UpdateMissileTargets(std::vector<HomingMissile>& missiles)
 			missile.Update(target);
 		}
 	}
+}
+
+void EnemyManager::UpdateEnemyShooting(Player* player)
+{
+	static Vector2d lastPlayerPos = player->position;
+	Vector2d playerVelocity = player->position.VectorTowardsTarget(lastPlayerPos);
+	playerVelocity = playerVelocity.ScaleVector(-1.0f / GetFrameTime());
+	lastPlayerPos = player->position;
+
+	for (auto enemy : enemies)
+	{
+		if (enemy->isAlive && enemy->ShouldShoot())
+		{
+			Vector2d shootPos = enemy->GetShootPosition();
+			Vector2d playerPos = player->position;
+			float bulletSpeed = 300.0f;
+
+			Vector2d shootDirection = CalculatePredictiveShot(
+				shootPos,
+				playerPos,
+				playerVelocity,
+				bulletSpeed
+			);
+
+			enemyBullets.push_back(EnemyBullet(shootPos, shootDirection, bulletSpeed));
+
+			enemy->ResetShootCooldown();
+		}
+	}
+}
+
+void EnemyManager::CheckEnemyBulletCollisions(Player* player)
+{
+	for (auto& bullet : enemyBullets)
+	{
+		if (bullet.isActive)
+		{
+			float distance = bullet.position.DistanceToTarget(player->position);
+
+			if (distance < 30.0f)
+			{
+				player->TakeDamage();
+				bullet.isActive = false;
+				bullet.position.y = 9999;
+			}
+		}
+	}
+}
+
+Vector2d EnemyManager::CalculatePredictiveShot(Vector2d shooterPos, Vector2d targetPos,
+	Vector2d targetVel, float bulletSpeed)
+{
+	Vector2d toTarget = shooterPos.VectorTowardsTarget(targetPos);
+
+	float targetSpeed = targetVel.CalculateMagnitude();
+	if (targetSpeed < 0.1f)
+	{
+		return toTarget.NormalizeVector();
+	}
+
+	Vector2d relativePos = toTarget;
+	Vector2d relativeVel = targetVel;
+
+	// at^2 + bt + c
+	float a = relativeVel.DotProduct(relativeVel) - bulletSpeed * bulletSpeed;
+	float b = 2.0f * relativePos.DotProduct(relativeVel);
+	float c = relativePos.DotProduct(relativePos);
+
+	float discriminant = b * b - 4 * a * c;
+
+	if (discriminant < 0 || fabs(a) < 0.001f)
+	{
+		return toTarget.NormalizeVector();
+	}
+
+	float t1 = (-b + sqrtf(discriminant)) / (2 * a);
+	float t2 = (-b - sqrtf(discriminant)) / (2 * a);
+
+	float t = -1;
+	if (t1 > 0 && t2 > 0)
+	{
+		t = (t1 < t2) ? t1 : t2;
+	}
+	else if (t1 > 0)
+	{
+		t = t1;
+	}
+	else if (t2 > 0)
+	{
+		t = t2;
+	}
+
+	if (t < 0)
+	{
+		return toTarget.NormalizeVector();
+	}
+
+	Vector2d predictedPosition = targetPos.SetVectorOffset(targetVel.ScaleVector(t));
+
+	Vector2d shootDirection = shooterPos.VectorTowardsTarget(predictedPosition);
+
+	return shootDirection.NormalizeVector();
 }
 
 Enemy* EnemyManager::GetNearestEnemyToPosition(Vector2d position)

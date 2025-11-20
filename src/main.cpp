@@ -35,11 +35,10 @@ int main()
 	Player* player = nullptr;
 	EnemyManager* enemyManager = nullptr;
 
-
 	while (!WindowShouldClose())
 	{
 		DrawFPS(50, 50);
-		
+
 		if (currentState == MENU)
 		{
 			if (menu.Update())
@@ -48,7 +47,7 @@ int main()
 					halfScreenWidth,
 					screenHeight - 100);
 				player->SetScreenBounds(screenWidth, screenHeight);
-				
+
 				enemyManager = new EnemyManager(screenWidth, screenHeight);
 
 				currentState = PLAYING;
@@ -56,19 +55,45 @@ int main()
 		}
 		else if (currentState == PLAYING)
 		{
-			Enemy* nearestEnemy = enemyManager->GetNearestEnemyToPosition(player->position);
+			if (!player->isAlive())
+			{
+				// Game Over
+				DrawText("GAME OVER", screenWidth / 2 - 100, screenHeight / 2, 40, RED);
+				DrawText("Press R to restart", screenWidth / 2 - 120, screenHeight / 2 + 50, 20, WHITE);
 
-			player->Update();
-			player->HandleMissiles(nearestEnemy);
+				if (IsKeyPressed(KEY_R))
+				{
+					delete player;
+					delete enemyManager;
 
-			enemyManager->UpdateMissileTargets(player->GetHomingissiles());
+					player = new Player(menu.GetSelectedShipPath(),
+						halfScreenWidth, screenHeight - 100);
+					player->SetScreenBounds(screenWidth, screenHeight);
+					enemyManager = new EnemyManager(screenWidth, screenHeight);
+				}
+			}
+			else
+			{
+				Enemy* nearestEnemy = enemyManager->GetNearestEnemyToPosition(player->position);
 
-			enemyManager->Update();
+				player->Update();
+				player->HandleMissiles(nearestEnemy);
 
-			enemyManager->CheckBulletCollisions(player->GetBullets());
-			enemyManager->CheckMissileCollisions(player->GetHomingissiles());
+				enemyManager->UpdateMissileTargets(player->GetHomingissiles());
+				enemyManager->Update();
 
-			player->UpdateMissiles();
+				// === ADD ENEMY SHOOTING ===
+				enemyManager->UpdateEnemyShooting(player);
+
+				// Check collisions
+				enemyManager->CheckBulletCollisions(player->GetBullets());
+				enemyManager->CheckMissileCollisions(player->GetHomingissiles());
+
+				// === ADD ENEMY BULLET COLLISIONS ===
+				enemyManager->CheckEnemyBulletCollisions(player);
+
+				player->UpdateMissiles();
+			}
 		}
 
 		BeginDrawing();
@@ -87,7 +112,7 @@ int main()
 		EndDrawing();
 	}
 
-	if (player != nullptr) 
+	if (player != nullptr)
 	{
 		delete player;
 	}

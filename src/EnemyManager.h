@@ -4,6 +4,9 @@
 #include "WaveConfig.h"
 #include <vector>
 #include "HomingMissile.h"
+#include "Player.h"
+#include "EnemyBullet.h"
+
 class EnemyManager
 {
 public:
@@ -15,6 +18,8 @@ public:
 	void CheckBulletCollisions(std::vector<Bullet>& bullets);
 	void CheckMissileCollisions(std::vector<HomingMissile>& missiles);
 	void UpdateMissileTargets(std::vector<HomingMissile>& missiles);
+	void UpdateEnemyShooting(Player* player);
+	void CheckEnemyBulletCollisions(Player* player);
 
 	Enemy* GetNearestEnemyToPosition(Vector2d position);
 
@@ -23,14 +28,20 @@ public:
 
 private:
 	std::vector<Enemy*> enemies;
+	std::vector<EnemyBullet> enemyBullets;
 	float screenWidth;
 	float screenHeight;
 	int currentWave;
 
 	Enemy* FindClosestEnemy(Vector2d position);
 
+	Vector2d CalculatePredictiveShot(Vector2d shooterPos, Vector2d targetPos,
+		Vector2d targetVel, float bulletSpeed);
+
+	void UpdateEnemyBullets();
+	void DrawEnemyBullets();
+
 	void SpawnWave();
 	bool AllEnemiesDefeated();
 	WaveConfig GetWaveConfig(int waveNum);
 };
-
