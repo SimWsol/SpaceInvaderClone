@@ -29,7 +29,13 @@ public:
 		return { position.x + offsetX, position.y + offsetY };
 	}
 
+	bool ShouldShoot();
+	void ResetShootCooldown();
+	Vector2d GetShootPosition();
+
 private:
 	Texture2D texture;
 	float scale;
+	float shootCooldown;
+	float timeSinceLastShot;
 };
