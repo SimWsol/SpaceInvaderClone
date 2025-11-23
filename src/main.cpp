@@ -82,14 +82,11 @@ int main()
 				enemyManager->UpdateMissileTargets(player->GetHomingissiles());
 				enemyManager->Update();
 
-				// === ADD ENEMY SHOOTING ===
 				enemyManager->UpdateEnemyShooting(player);
 
-				// Check collisions
 				enemyManager->CheckBulletCollisions(player->GetBullets());
 				enemyManager->CheckMissileCollisions(player->GetHomingissiles());
 
-				// === ADD ENEMY BULLET COLLISIONS ===
 				enemyManager->CheckEnemyBulletCollisions(player);
 
 				player->UpdateMissiles();
