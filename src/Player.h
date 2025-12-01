@@ -55,6 +55,9 @@ private:
 	float missileRegenRate;
 	float missileRegenTimer;
 
+	Sound bulletShotSound;
+	Sound missileLaunchSound;
+
 	void HandleMovement();
 	void HandleShooting();
 	void UpdateBullets();

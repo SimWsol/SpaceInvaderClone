@@ -22,6 +22,8 @@ int main()
 	InitWindow(screenWidth, screenHeight, "Space Invaders");
 	SetTargetFPS(60);
 
+	InitAudioDevice();
+
 	GameState currentState = MENU;
 
 	const char* spaceshipPaths[5] = {
@@ -117,6 +119,8 @@ int main()
 	{
 		delete enemyManager;
 	}
+
+	CloseAudioDevice();
 
 	CloseWindow();
 	return 0;

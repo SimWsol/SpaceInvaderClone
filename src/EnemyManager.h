@@ -35,6 +35,8 @@ private:
 	float screenHeight;
 	int currentWave;
 
+	Sound powerupPickupSound;
+
 	Enemy* FindClosestEnemy(Vector2d position);
 
 	Vector2d CalculatePredictiveShot(Vector2d shooterPos, Vector2d targetPos,

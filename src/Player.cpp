@@ -1,6 +1,9 @@
 #include "Player.h"
 #include <iostream>
 
+static const char* BULLET_SHOT_SOUND_PATH = "resources/SoundEffects/bullet_pew.mp3";
+static const char* MISSILE_LAUNCH_SOUND_PATH = "resources/SoundEffects/missile_kaboom.mp3";
+
 Player::Player(const char* imagePath, float startX, float startY)
 {
 	position.x = startX;
@@ -16,7 +19,7 @@ Player::Player(const char* imagePath, float startX, float startY)
 	timeSinceLastShot = 0;
 
 	// Missiles
-	missileCooldown = 1.0f;
+	missileCooldown = 0.5f;
 	timeSinceLastMissile = 0;
 	missileCount = 10;
 	maxMissiles = 15;
@@ -25,11 +28,17 @@ Player::Player(const char* imagePath, float startX, float startY)
 
 	health = 3;
 	maxHealth = 5;
+
+	bulletShotSound = LoadSound(BULLET_SHOT_SOUND_PATH);
+	missileLaunchSound = LoadSound(MISSILE_LAUNCH_SOUND_PATH);
 }
 
 Player::~Player()
 {
 	UnloadTexture(playerTexture);
+
+	UnloadSound(bulletShotSound);
+	UnloadSound(missileLaunchSound);
 }
 
 void Player::SetScreenBounds(float width, float height)
@@ -44,8 +53,8 @@ void Player::Update()
 
 	lastPosition = position;
 
-	timeSinceLastShot += GetFrameTime();
-	timeSinceLastMissile += GetFrameTime();
+	timeSinceLastShot += dT;
+	timeSinceLastMissile += dT;
 	missileRegenTimer += dT;
 
 	if (missileCount < maxMissiles && missileRegenTimer >= missileRegenRate)
@@ -114,6 +123,8 @@ void Player::HandleShooting()
 		bullets.push_back(Bullet(bulletStartPos, shootDirection, 500.0f));
 
 		timeSinceLastShot = 0;
+
+		PlaySound(bulletShotSound);
 	}
 }
 
@@ -145,6 +156,8 @@ void Player::HandleMissiles(Enemy* nearestEnemy)
 
 		timeSinceLastMissile = 0;
 		missileCount--;
+
+		PlaySound(missileLaunchSound);
 	}
 }
 

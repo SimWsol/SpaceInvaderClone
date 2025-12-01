@@ -8,11 +8,15 @@ EnemyManager::EnemyManager(float screenWidth, float screenHeight)
 	this->screenHeight = screenHeight;
 	currentWave = 0;
 
+	powerupPickupSound = LoadSound("resources/SoundEffects/nom.wav");
+
 	SpawnWave();
 }
 
 EnemyManager::~EnemyManager()
 {
+	UnloadSound(powerupPickupSound);
+
 	for (auto enemy : enemies)
 	{
 		delete enemy;
@@ -448,6 +452,8 @@ void EnemyManager::CheckPowerupCollisions(Player* player)
 					player->AddHealth(1);
 				}
 
+				PlaySound(powerupPickupSound);
+
 				powerup.isActive = false;
 				powerup.position.y = 99999;
 			}
@@ -489,7 +495,7 @@ void EnemyManager::SpawnPowerup(Vector2d position)
 {
 	int randomChance = GetRandomValue(0, 100);
 
-	if (randomChance < 30)
+	if (randomChance < 10)
 	{
 		PowerupType type;
 
@@ -502,7 +508,7 @@ void EnemyManager::SpawnPowerup(Vector2d position)
 			type = MISSILE_REFILL;
 			printf("Spawning MISSILE_REFILL\n");
 		}
-		else if (typeRoll < 75)
+		else if (typeRoll < 80)
 		{
 			type = HEALTH_PACK;
 			printf("Spawning HEALTH_PACK\n");
