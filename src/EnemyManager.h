@@ -20,6 +20,7 @@ public:
 	void UpdateMissileTargets(std::vector<HomingMissile>& missiles);
 	void UpdateEnemyShooting(Player* player);
 	void CheckEnemyBulletCollisions(Player* player);
+	void CheckPowerupCollisions(Player* player);
 
 	Enemy* GetNearestEnemyToPosition(Vector2d position);
 
@@ -29,6 +30,7 @@ public:
 private:
 	std::vector<Enemy*> enemies;
 	std::vector<EnemyBullet> enemyBullets;
+	std::vector<Powerup> powerups;
 	float screenWidth;
 	float screenHeight;
 	int currentWave;
@@ -44,4 +46,8 @@ private:
 	void SpawnWave();
 	bool AllEnemiesDefeated();
 	WaveConfig GetWaveConfig(int waveNum);
+
+	void SpawnPowerup(Vector2d position);
+	void UpdatePowerups();
+	void DrawPowerups();
 };

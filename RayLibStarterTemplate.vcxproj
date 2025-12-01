@@ -149,6 +149,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\Powerup.cpp" />
     <ClCompile Include="src\Vector2d.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +160,7 @@
     <ClInclude Include="src\HomingMissile.h" />
     <ClInclude Include="src\Menu.h" />
     <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\Powerup.h" />
     <ClInclude Include="src\Vector2d.h" />
     <ClInclude Include="src\WaveConfig.h" />
   </ItemGroup>

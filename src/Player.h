@@ -5,6 +5,7 @@
 #include "HomingMissile.h"
 #include "Enemy.h"
 #include <vector>
+#include "Powerup.h"
 
 class Player
 {
@@ -20,6 +21,8 @@ public:
 	void UpdateMissiles();
 	void HandleMissiles(Enemy* nearestEnemy);
 	void TakeDamage();
+	void AddMissiles(int amount);
+	void IncreaseMaxMissiles(int amount);
 
 	std::vector<Bullet>& GetBullets() { return bullets; }
 	std::vector<HomingMissile>& GetHomingissiles() { return homingMissiles; }
@@ -47,6 +50,9 @@ private:
 	float missileCooldown;
 	float timeSinceLastMissile;
 	int missileCount;
+	int maxMissiles;
+	float missileRegenRate;
+	float missileRegenTimer;
 
 	void HandleMovement();
 	void HandleShooting();

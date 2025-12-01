@@ -6,4 +6,5 @@ struct WaveConfig
 	int enemiesPerRow;
 	int rows;
 	const char* enemyTexture;
+	bool spawnPowerup;
 };

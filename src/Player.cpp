@@ -19,6 +19,9 @@ Player::Player(const char* imagePath, float startX, float startY)
 	missileCooldown = 1.0f;
 	timeSinceLastMissile = 0;
 	missileCount = 10;
+	maxMissiles = 15;
+	missileRegenRate = 3.0f;
+	missileRegenTimer = 0;
 
 	health = 3;
 	maxHealth = 3;
@@ -43,6 +46,13 @@ void Player::Update()
 
 	timeSinceLastShot += GetFrameTime();
 	timeSinceLastMissile += GetFrameTime();
+	missileRegenTimer += dT;
+
+	if (missileCount < maxMissiles && missileRegenTimer >= missileRegenRate)
+	{
+		missileCount++;
+		missileRegenTimer = 0;
+	}
 
 	HandleMovement();
 	HandleShooting();
@@ -197,5 +207,29 @@ void Player::DrawMissiles()
 	for (auto& missile : homingMissiles)
 	{
 		missile.Draw();
+	}
+}
+
+void Player::AddMissiles(int amount)
+{
+	missileCount += amount;
+
+	if (missileCount > maxMissiles)
+	{
+		missileCount = maxMissiles;
+	}
+}
+
+void Player::IncreaseMaxMissiles(int amount)
+{
+
+	if (maxMissiles < 30)
+	{
+		maxMissiles += amount;
+
+		if (maxMissiles > 30)
+		{
+			maxMissiles = 30;
+		}
 	}
 }

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Menu.h"
 #include "EnemyManager.h"
+#include "Powerup.h"
 
 enum GameState
 {
@@ -81,12 +82,11 @@ int main()
 
 				enemyManager->UpdateMissileTargets(player->GetHomingissiles());
 				enemyManager->Update();
-
 				enemyManager->UpdateEnemyShooting(player);
 
 				enemyManager->CheckBulletCollisions(player->GetBullets());
 				enemyManager->CheckMissileCollisions(player->GetHomingissiles());
-
+				enemyManager->CheckPowerupCollisions(player);
 				enemyManager->CheckEnemyBulletCollisions(player);
 
 				player->UpdateMissiles();

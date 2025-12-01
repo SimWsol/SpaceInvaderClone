@@ -1,5 +1,6 @@
 #include "EnemyManager.h"
 #include <iostream>
+#include <algorithm>
 
 EnemyManager::EnemyManager(float screenWidth, float screenHeight)
 {
@@ -147,6 +148,7 @@ void EnemyManager::Update()
 		enemy->Update();
 	}
 
+	UpdatePowerups();
 	UpdateEnemyBullets();
 }
 
@@ -164,6 +166,20 @@ void EnemyManager::UpdateEnemyBullets()
 	);
 }
 
+void EnemyManager::UpdatePowerups()
+{
+	for (auto& powerup : powerups)
+	{
+		powerup.Update();
+	}
+
+	powerups.erase(
+		std::remove_if(powerups.begin(), powerups.end(),
+			[this](Powerup& p) { return p.IsOffScreen(screenHeight); }),
+		powerups.end()
+	);
+}
+
 void EnemyManager::Draw()
 {
 	
@@ -172,6 +188,7 @@ void EnemyManager::Draw()
 		enemy->Draw();
 	}
 
+	DrawPowerups();
 	DrawEnemyBullets();
 
 	DrawText(TextFormat("Wave: %d", currentWave), screenWidth - 150, 10, 20, WHITE);
@@ -186,6 +203,14 @@ void EnemyManager::DrawEnemyBullets()
 	}
 }
 
+void EnemyManager::DrawPowerups()
+{
+	for (auto& powerup : powerups)
+	{
+		powerup.Draw();
+	}
+}
+
 void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
 {
 	for (auto& bullet : bullets)
@@ -194,6 +219,7 @@ void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
 		{
 			if (enemy->isAlive)
 			{
+				Vector2d collisionPos = enemy->GetCollisionPosition();
 				Vector2d bulletPos = bullet.position;
 				float bulletWidth = 4;
 				float bulletHeight = 10;
@@ -202,12 +228,15 @@ void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
 				if (bulletPos.CheckRectangleCollision(
 					bulletWidth,
 					bulletHeight,
-					enemy->GetCollisionPosition(),
+					collisionPos,
 					enemy->GetCollisionWidth(),
 					enemy->GetCollisionHeight()))
 				{
+					Vector2d enemyPos = enemy->position;
 					enemy->TakeDamage();
 					bullet.position.y = -100;
+
+					SpawnPowerup(enemyPos);
 					break;
 				}
 			}
@@ -390,11 +419,43 @@ void EnemyManager::CheckMissileCollisions(std::vector<HomingMissile>& missiles)
 
 				if (distance < 30.0f)
 				{
+					Vector2d enemyPos = enemy->position;
 					enemy->TakeDamage();
 					missile.isActive = false;
 					missile.position.y = -100;
+
+					SpawnPowerup(enemyPos);
 					break;
 				}
+			}
+		}
+	}
+}
+
+void EnemyManager::CheckPowerupCollisions(Player* player)
+{
+	Vector2d playerPos = player->position;
+
+	for (auto& powerup : powerups)
+	{
+		if (powerup.isActive)
+		{
+			float distance = playerPos.DistanceToTarget(powerup.position);
+
+			if (distance < 40.0f)
+			{
+				if (powerup.type == MISSILE_REFILL)
+				{
+					player->AddMissiles(5);
+				}
+				else if (powerup.type == EXTRA_MISSILES)
+				{
+					player->IncreaseMaxMissiles(3);
+					player->AddMissiles(3);
+				}
+
+				powerup.isActive = false;
+				powerup.position.y = 99999;
 			}
 		}
 	}
@@ -428,4 +489,26 @@ int EnemyManager::GetEnemiesRemaining()
 		}
 	}
 	return count;
+}
+
+void EnemyManager::SpawnPowerup(Vector2d position)
+{
+	int randomChance = GetRandomValue(0, 100);
+
+	if (randomChance < 30)
+	{
+		PowerupType type;
+
+		if (GetRandomValue(0, 100) < 70)
+		{
+			type = MISSILE_REFILL;
+
+		}
+		else
+		{
+			type = EXTRA_MISSILES;
+		}
+
+		powerups.push_back(Powerup(position, type));
+	}
 }
