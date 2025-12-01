@@ -24,6 +24,10 @@ int main()
 
 	InitAudioDevice();
 
+	Music bgMusic = LoadMusicStream("resources/music/bg_galaxy.wav");
+	PlayMusicStream(bgMusic);
+	SetMusicVolume(bgMusic, 0.5f);
+
 	GameState currentState = MENU;
 
 	const char* spaceshipPaths[5] = {
@@ -95,6 +99,7 @@ int main()
 			}
 		}
 
+		UpdateMusicStream(bgMusic);
 		BeginDrawing();
 		ClearBackground(BLACK);
 
@@ -120,8 +125,8 @@ int main()
 		delete enemyManager;
 	}
 
+	UnloadMusicStream(bgMusic);
 	CloseAudioDevice();
-
 	CloseWindow();
 	return 0;
 }
