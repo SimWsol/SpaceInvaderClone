@@ -24,7 +24,7 @@ Player::Player(const char* imagePath, float startX, float startY)
 	missileRegenTimer = 0;
 
 	health = 3;
-	maxHealth = 3;
+	maxHealth = 5;
 }
 
 Player::~Player()
@@ -150,8 +150,6 @@ void Player::HandleMissiles(Enemy* nearestEnemy)
 
 void Player::UpdateBullets()
 {
-	int initialSize = bullets.size();
-
 	for (auto& bullet : bullets)
 	{
 		bullet.Update();
@@ -162,17 +160,10 @@ void Player::UpdateBullets()
 			[this](Bullet& b) { return b.IsOffScreen(screenHeight); }),
 		bullets.end()
 	);
-
-	if (initialSize != bullets.size())
-	{
-		std::cout << "Bullets removed! Before: " << initialSize
-			<< " After: " << bullets.size() << std::endl;
-	}
 }
 
 void Player::UpdateMissiles()
 {
-
 	homingMissiles.erase(
 		std::remove_if(homingMissiles.begin(), homingMissiles.end(),
 			[this](HomingMissile& m) { return m.IsOffScreen(screenHeight); }),
@@ -217,6 +208,15 @@ void Player::AddMissiles(int amount)
 	if (missileCount > maxMissiles)
 	{
 		missileCount = maxMissiles;
+	}
+}
+
+void Player::AddHealth(int amount)
+{
+	health += amount;
+	if (health > maxHealth)
+	{
+		health = maxHealth;
 	}
 }
 

@@ -5,7 +5,8 @@
 enum PowerupType
 {
 	MISSILE_REFILL,
-	EXTRA_MISSILES
+	EXTRA_MISSILES,
+	HEALTH_PACK
 };
 
 class Powerup

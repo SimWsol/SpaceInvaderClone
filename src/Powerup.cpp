@@ -10,13 +10,17 @@ Powerup::Powerup(Vector2d startPosition, PowerupType powerupType)
 
 	velocity = { 0, 1 };
 
-	if (type = MISSILE_REFILL)
+	if (type == MISSILE_REFILL)
 	{
 		powerupColor = SKYBLUE;
 	}
-	else if (type = EXTRA_MISSILES)
+	else if (type == EXTRA_MISSILES)
 	{
 		powerupColor = PURPLE;
+	}
+	else if (type == HEALTH_PACK)
+	{
+		powerupColor = GREEN;
 	}
 }
 
@@ -51,6 +55,10 @@ void Powerup::Draw()
 		else if (type == EXTRA_MISSILES)
 		{
 			DrawText("M+", (int)position.x - 8, (int)position.y - 7, 12, DARKPURPLE);
+		}
+		else if (type == HEALTH_PACK)
+		{
+			DrawText("H", (int)position.x - 5, (int)position.y - 7, 15, DARKGREEN);
 		}
 	}
 }

@@ -247,22 +247,12 @@ void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
 void EnemyManager::UpdateMissileTargets(std::vector<HomingMissile>& missiles)
 {
 	// Update each missile with closest enemy target
-	std::cout << "Updating " << missiles.size() << " missiles" << std::endl;
+	// std::cout << "Updating " << missiles.size() << " missiles" << std::endl;
 	for (auto& missile : missiles)
 	{
 		if (missile.isActive)
 		{
 			Enemy* target = FindClosestEnemy(missile.position);
-
-			if (target != nullptr)
-			{
-				std::cout << "Missile has target at (" << target->position.x
-					<< ", " << target->position.y << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << "Missile has NO TARGET!" << std::endl;
-			}
 
 			missile.Update(target);
 		}
@@ -453,6 +443,10 @@ void EnemyManager::CheckPowerupCollisions(Player* player)
 					player->IncreaseMaxMissiles(3);
 					player->AddMissiles(3);
 				}
+				else if (powerup.type == HEALTH_PACK)
+				{
+					player->AddHealth(1);
+				}
 
 				powerup.isActive = false;
 				powerup.position.y = 99999;
@@ -499,14 +493,24 @@ void EnemyManager::SpawnPowerup(Vector2d position)
 	{
 		PowerupType type;
 
-		if (GetRandomValue(0, 100) < 70)
+		int typeRoll = GetRandomValue(0, 100);
+
+		printf("typeRoll = %d\n", typeRoll);
+
+		if (typeRoll < 50)
 		{
 			type = MISSILE_REFILL;
-
+			printf("Spawning MISSILE_REFILL\n");
+		}
+		else if (typeRoll < 75)
+		{
+			type = HEALTH_PACK;
+			printf("Spawning HEALTH_PACK\n");
 		}
 		else
 		{
 			type = EXTRA_MISSILES;
+			printf("Spawning EXTRA_MISSILES\n");
 		}
 
 		powerups.push_back(Powerup(position, type));

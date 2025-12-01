@@ -38,7 +38,7 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		DrawFPS(50, 50);
+		DrawFPS(50, 100);
 
 		if (currentState == MENU)
 		{
@@ -60,7 +60,7 @@ int main()
 			{
 				// Game Over
 				DrawText("GAME OVER", screenWidth / 2 - 100, screenHeight / 2, 40, RED);
-				DrawText("Press R to restart", screenWidth / 2 - 120, screenHeight / 2 + 50, 20, WHITE);
+				DrawText("Press R to restart", screenWidth / 2 - 75, screenHeight / 2 + 50, 20, WHITE);
 
 				if (IsKeyPressed(KEY_R))
 				{

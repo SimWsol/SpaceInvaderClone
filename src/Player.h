@@ -23,6 +23,7 @@ public:
 	void TakeDamage();
 	void AddMissiles(int amount);
 	void IncreaseMaxMissiles(int amount);
+	void AddHealth(int amount);
 
 	std::vector<Bullet>& GetBullets() { return bullets; }
 	std::vector<HomingMissile>& GetHomingissiles() { return homingMissiles; }
