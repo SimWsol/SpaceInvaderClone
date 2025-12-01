@@ -9,6 +9,7 @@ EnemyManager::EnemyManager(float screenWidth, float screenHeight)
 	currentWave = 0;
 
 	powerupPickupSound = LoadSound("resources/SoundEffects/nom.wav");
+	enemyHitSound = LoadSound("resources/SoundEffects/ouch.wav");
 
 	SpawnWave();
 }
@@ -16,6 +17,7 @@ EnemyManager::EnemyManager(float screenWidth, float screenHeight)
 EnemyManager::~EnemyManager()
 {
 	UnloadSound(powerupPickupSound);
+	UnloadSound(enemyHitSound);
 
 	for (auto enemy : enemies)
 	{
@@ -238,6 +240,7 @@ void EnemyManager::CheckBulletCollisions(std::vector<Bullet>& bullets)
 				{
 					Vector2d enemyPos = enemy->position;
 					enemy->TakeDamage();
+					PlaySound(enemyHitSound);
 					bullet.position.y = -100;
 
 					SpawnPowerup(enemyPos);
@@ -415,6 +418,7 @@ void EnemyManager::CheckMissileCollisions(std::vector<HomingMissile>& missiles)
 				{
 					Vector2d enemyPos = enemy->position;
 					enemy->TakeDamage();
+					PlaySound(enemyHitSound);
 					missile.isActive = false;
 					missile.position.y = -100;
 

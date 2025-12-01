@@ -36,6 +36,7 @@ private:
 	int currentWave;
 
 	Sound powerupPickupSound;
+	Sound enemyHitSound;
 
 	Enemy* FindClosestEnemy(Vector2d position);
 
